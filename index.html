@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Família Pla — Compra i Entrada</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f5f1ea;
+            --sidebar-bg: #ebe3d5;
+            --sidebar-border: #dcd0bc;
+            --card-bg: #fbf9f5;
+            --tile-bg: #f3ede2;
+            --tile-active: #e7dcc8;
+            --text-main: #2e2a25;
+            --text-muted: #6e665c;
+            --warm-ochre: #b87d3b;
+            --warm-ochre-soft: #ead7be;
+            --warm-sage: #5c7663;
+            --warm-terracotta: #b85d43;
+            --border-color: #e3dacb;
+            --shadow: 0 8px 24px rgba(46, 42, 37, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        /* Menú lateral per a tauleta en horitzontal */
+        aside.sidebar {
+            width: 240px;
+            min-width: 240px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 28px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .brand-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 28px;
+            padding: 0 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-sub {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 13px 16px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.45);
+        }
+
+        .nav-btn.active {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            color: var(--warm-ochre);
+            box-shadow: 0 3px 10px rgba(46, 42, 37, 0.04);
+        }
+
+        .sidebar-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-exit-alert {
+            width: 100%;
+            background-color: var(--warm-terracotta);
+            color: #fffaf5;
+            border: none;
+            padding: 13px 14px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .btn-exit-alert:active {
+            opacity: 0.88;
+        }
+
+        .clock-mini {
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* Àrea principal */
+        main.content {
+            flex: 1;
+            padding: 24px 28px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .page-header h1 {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .page-header span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        /* Layout horitzontal per a la pantalla de compra */
+        .shopping-layout {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 22px;
+            align-items: start;
+            flex: 1;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-title {
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        /* Requadres quotidians: pictograma a dalt i nom a sota dins el requadre */
+        .everyday-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .product-box {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 10px;
+            min-height: 104px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .product-box:hover {
+            background-color: var(--tile-active);
+            border-color: var(--warm-ochre);
+        }
+
+        .product-box:active {
+            transform: scale(0.98);
+        }
+
+        .product-box.selected {
+            background-color: var(--warm-ochre-soft);
+            border-color: var(--warm-ochre);
+        }
+
+        .product-icon {
+            font-size: 1.75rem;
+            line-height: 1;
+        }
+
+        .product-name {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .product-qty-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--warm-ochre);
+            background-color: var(--card-bg);
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Camp per a compres esporàdiques o no freqüents */
+        .sporadic-box {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sporadic-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sporadic-input {
+            flex: 1;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .sporadic-input:focus {
+            border-color: var(--warm-ochre);
+        }
+
+        .btn-add-sporadic {
+            background-color: var(--warm-ochre);
+            color: #fffaf5;
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Llista activa a la dreta */
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            max-height: 410px;
+            overflow-y: auto;
+        }
+
+        .cart-row {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .cart-row.done {
+            opacity: 0.55;
+            text-decoration: line-through;
+        }
+
+        .cart-item-info {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cart-item-qty {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .btn-mini {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .btn-mini.remove {
+            color: var(--warm-terracotta);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 36px 16px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        /* Modal per posar la quantitat i acceptar */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(46, 42, 37, 0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 20px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 16px 40px rgba(46, 42, 37, 0.16);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .modal-header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            font-size: 2rem;
+            background-color: var(--tile-bg);
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .qty-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .qty-step-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--tile-bg);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .qty-input {
+            flex: 1;
+            height: 52px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background-color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .qty-input:focus {
+            border-color: var(--warm-ochre);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-accept {
+            flex: 1.4;
+            background-color: var(--warm-sage);
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #f9fcf9;
+            cursor: pointer;
+        }
+
+        .placeholder-note {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 28px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand-title">
+                Família Pla
+                <span class="brand-sub">Entrada de casa</span>
+            </div>
+            <nav class="nav-list">
+                <button class="nav-btn" data-view="home" onclick="switchView('home')">Inici</button>
+                <button class="nav-btn active" data-view="shopping" onclick="switchView('shopping')">Llista de la compra</button>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-exit-alert" onclick="triggerExitAlert()">AVÍS SORTIDA</button>
+            <div class="clock-mini" id="side-clock">--:--</div>
+        </div>
+    </aside>
+
+    <main class="content">
+        <!-- Pestanya d'Inici (reservada pel següent pas) -->
+        <section id="view-home" class="view-section">
+            <div class="page-header">
+                <h1>Inici</h1>
+                <span>Preparat per al següent pas</span>
+            </div>
+            <div class="placeholder-note">
+                Ara estem construint la pantalla de la compra pas a pas. Prem <strong>Llista de la compra</strong> al menú per treballar-hi.
+            </div>
+        </section>
+
+        <!-- Pantalla de la Llista de la Compra -->
+        <section id="view-shopping" class="view-section active">
+            <div class="page-header">
+                <h1>Llista de la compra</h1>
+                <span id="shopping-summary">0 productes a demanar</span>
+            </div>
+
+            <div class="shopping-layout">
+                <!-- Esquerra: Requadres quotidians + compres esporàdiques -->
+                <div class="panel">
+                    <div class="panel-title">Productes quotidians</div>
+                    <div class="everyday-grid" id="everyday-grid"></div>
+
+                    <div class="sporadic-box">
+                        <div class="panel-title">Compra esporàdica o no freqüent</div>
+                        <form class="sporadic-form" onsubmit="handleSporadicSubmit(event)">
+                            <input
+                                type="text"
+                                id="sporadic-input"
+                                class="sporadic-input"
+                                placeholder="Ex: piles AAA, paper de forn, espelmes..."
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="btn-add-sporadic">Afegir</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Dreta: Llista activa -->
+                <div class="panel">
+                    <div class="panel-title">A comprar</div>
+                    <div class="cart-list" id="cart-list"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Finestra per indicar la quantitat i acceptar -->
+    <div class="modal-backdrop" id="qty-modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-card">
+            <div class="modal-header-row">
+                <div class="modal-icon" id="modal-icon">🛒</div>
+                <div>
+                    <div class="modal-title" id="modal-product-name">Producte</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Indica la quantitat a demanar</div>
+                </div>
+            </div>
+
+            <div class="qty-stepper">
+                <button type="button" class="qty-step-btn" onclick="stepQuantity(-1)">-</button>
+                <input
+                    type="text"
+                    id="modal-qty-input"
+                    class="qty-input"
+                    value="1"
+                    onkeydown="handleModalKey(event)"
+                >
+                <button type="button" class="qty-step-btn" onclick="stepQuantity(1)">+</button>
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeQuantityModal()">Cancel·lar</button>
+                <button type="button" class="btn-accept" onclick="acceptQuantity()">Acceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'familia_pla_compra_v1';
+
+        const everydayProducts = [
+            { id: 'llet', name: 'Llet', icon: '🥛', defaultQty: '2' },
+            { id: 'ous', name: 'Ous', icon: '🥚', defaultQty: '1 dotzena' },
+            { id: 'pa', name: 'Pa', icon: '🥖', defaultQty: '1' },
+            { id: 'fruita', name: 'Fruita', icon: '🍎', defaultQty: '1' },
+            { id: 'verdures', name: 'Verdures', icon: '🥦', defaultQty: '1' },
+            { id: 'carn', name: 'Carn', icon: '🥩', defaultQty: '1' },
+            { id: 'peix', name: 'Peix', icon: '🐟', defaultQty: '1' },
+            { id: 'iogurts', name: 'Iogurts', icon: '🥣', defaultQty: '1 pack' },
+            { id: 'formatge', name: 'Formatge', icon: '🧀', defaultQty: '1' },
+            { id: 'oli', name: 'Oli', icon: '🫗', defaultQty: '1' },
+            { id: 'cafe', name: 'Cafè', icon: '☕', defaultQty: '1' },
+            { id: 'neteja', name: 'Neteja', icon: '🧼', defaultQty: '1' }
+        ];
+
+        let shoppingItems = loadShoppingItems();
+        let pendingItem = null;
+
+        function loadShoppingItems() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveShoppingItems() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingItems));
+        }
+
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.toggle('active', sec.id === `view-${viewName}`);
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewName);
+            });
+        }
+
+        function triggerExitAlert() {
+            alert('Avís registrat: sortida de casa.');
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('side-clock').textContent = `${hh}:${mm}`;
+        }
+
+        function renderEverydayGrid() {
+            const grid = document.getElementById('everyday-grid');
+            grid.innerHTML = '';
+
+            everydayProducts.forEach(prod => {
+                const existing = shoppingItems.find(item => item.name.toLowerCase() === prod.name.toLowerCase() && !item.done);
+                const box = document.createElement('button');
+                box.type = 'button';
+                box.className = `product-box${existing ? ' selected' : ''}`;
+                box.onclick = () => openQuantityModal(prod.name, prod.icon, existing ? existing.quantity : prod.defaultQty);
+
+                const badgeHtml = existing
+                    ? `<span class="product-qty-badge">${escapeHtml(existing.quantity)}</span>`
+                    : '';
+
+                box.innerHTML = `
+                    <span class="product-icon">${prod.icon}</span>
+                    <span class="product-name">${prod.name}</span>
+                    ${badgeHtml}
+                `;
+                grid.appendChild(box);
+            });
+        }
+
+        function renderCartList() {
+            const listEl = document.getElementById('cart-list');
+            const summaryEl = document.getElementById('shopping-summary');
+            const activeCount = shoppingItems.filter(i => !i.done).length;
+
+            summaryEl.textContent = activeCount === 1
+                ? '1 producte a demanar'
+                : `${activeCount} productes a demanar`;
+
+            if (shoppingItems.length === 0) {
+                listEl.innerHTML = '<div class="empty-state">Prem un requadre o afegeix un producte esporàdic.</div>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            shoppingItems.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = `cart-row${item.done ? ' done' : ''}`;
+                row.innerHTML = `
+                    <div class="cart-item-info" onclick="toggleDone(${index})">
+                        <span class="cart-item-title">${item.icon ? item.icon + ' ' : ''}${escapeHtml(item.name)}</span>
+                        <span class="cart-item-qty">Quantitat: ${escapeHtml(item.quantity)}</span>
+                    </div>
+                    <div class="cart-actions">
+                        <button type="button" class="btn-mini" onclick="editCartItem(${index})">Quantitat</button>
+                        <button type="button" class="btn-mini remove" onclick="removeCartItem(${index})">Treure</button>
+                    </div>
+                `;
+                listEl.appendChild(row);
+            });
+        }
+
+        function openQuantityModal(name, icon, initialQty) {
+            pendingItem = { name, icon };
+            document.getElementById('modal-product-name').textContent = name;
+            document.getElementById('modal-icon').textContent = icon || '🛍️';
+            const input = document.getElementById('modal-qty-input');
+            input.value = initialQty || '1';
+            document.getElementById('qty-modal').classList.add('open');
+            setTimeout(() => {
+                input.focus();
+                input.select();
+            }, 40);
+        }
+
+        function closeQuantityModal() {
+            pendingItem = null;
+            document.getElementById('qty-modal').classList.remove('open');
+        }
+
+        function closeModalOnBackdrop(event) {
+            if (event.target.id === 'qty-modal') {
+                closeQuantityModal();
+            }
+        }
+
+        function stepQuantity(delta) {
+            const input = document.getElementById('modal-qty-input');
+            const parsed = parseFloat(input.value.replace(',', '.'));
+            if (!isNaN(parsed)) {
+                const next = Math.max(1, parsed + delta);
+                input.value = String(next);
+            } else {
+                input.value = '1';
+            }
+        }
+
+        function acceptQuantity() {
+            if (!pendingItem) return;
+            const rawQty = document.getElementById('modal-qty-input').value.trim();
+            const quantity = rawQty || '1';
+
+            const existingIndex = shoppingItems.findIndex(
+                i => i.name.toLowerCase() === pendingItem.name.toLowerCase()
+            );
+
+            if (existingIndex >= 0) {
+                shoppingItems[existingIndex].quantity = quantity;
+                shoppingItems[existingIndex].done = false;
+                if (pendingItem.icon) {
+                    shoppingItems[existingIndex].icon = pendingItem.icon;
+                }
+            } else {
+                shoppingItems.unshift({
+                    name: pendingItem.name,
+                    icon: pendingItem.icon || '🛍️',
+                    quantity,
+                    done: false
+                });
+            }
+
+            saveShoppingItems();
+            renderEverydayGrid();
+            renderCartList();
+            closeQuantityModal();
+        }
+
+        function handleModalKey(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                acceptQuantity();
+            } else if (event.key === 'Escape') {
+                closeQuantityModal();
+            }
+        }
+
+        function handleSporadicSubmit(event) {
+            event.preventDefault();
+            const input = document.getElementById('sporadic-input');
+            const name = input.value.trim();
+            if (!name) return;
+            input.value = '';
+            openQuantityModal(name, '🛍️', '1');
+        }
+
+        function toggleDone(index) {
+            shoppingItems[index].done = !shoppingItems[index].done;
+            saveShoppingItems();
+            renderEverydayGrid();
+            renderCartList();
+        }
+
+        function editCartItem(index) {
+            const item = shoppingItems[index];
+            openQuantityModal(item.name, item.icon || '🛍️', item.quantity);
+        }
+
+        function removeCartItem(index) {
+            shoppingItems.splice(index, 1);
+            saveShoppingItems();
+            renderEverydayGrid();
+            renderCartList();
+        }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+        renderEverydayGrid();
+        renderCartList();
+    </script>
+</body>
+</html>
