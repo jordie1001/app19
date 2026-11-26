@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Casagroga — Compra i Calendari</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>CASAGROGA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-main: #f5f1ea;
-            --sidebar-bg: #ebe3d5;
-            --sidebar-border: #dcd0bc;
-            --card-bg: #fbf9f5;
-            --tile-bg: #f3ede2;
-            --tile-active: #e7dcc8;
-            --text-main: #2e2a25;
-            --text-muted: #6e665c;
-            --warm-ochre: #b87d3b;
-            --warm-ochre-soft: #ead7be;
-            --warm-sage: #5c7663;
-            --warm-terracotta: #b85d43;
-            --border-color: #e3dacb;
-            --shadow: 0 8px 24px rgba(46, 42, 37, 0.05);
+            --bg-main: #f7f6f2;
+            --sidebar-bg: #262522;
+            --sidebar-border: #383631;
+            --sidebar-text: #f3efe6;
+            --sidebar-muted: #a69f92;
+            --card-bg: #fffefa;
+            --tile-bg: #f1eee7;
+            --tile-hover: #e7e1d5;
+            --text-main: #22201d;
+            --text-muted: #6c665c;
+            --groga: #d49a2a;
+            --groga-soft: #f7ebd0;
+            --olive: #4d6b53;
+            --rust: #b55239;
+            --border-color: #e4dfd5;
+            --shadow: 0 10px 28px rgba(34, 32, 29, 0.05);
         }
 
         * {
@@ -35,38 +37,45 @@
             color: var(--text-main);
             display: flex;
             flex-direction: row;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
+            min-height: 100vh;
+            width: 100%;
         }
 
-        /* Menú lateral per a tauleta en horitzontal */
+        /* Barra lateral (escriptori / tauleta horitzontal) */
         aside.sidebar {
-            width: 240px;
-            min-width: 240px;
+            width: 248px;
+            min-width: 248px;
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--sidebar-border);
-            padding: 28px 18px;
+            padding: 24px 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            color: var(--sidebar-text);
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
 
-        .brand-title {
-            font-size: 1.05rem;
+        .brand-box {
+            padding: 4px 10px 22px;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 18px;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
             font-weight: 800;
-            color: var(--text-main);
-            margin-bottom: 28px;
-            padding: 0 10px;
-            letter-spacing: -0.3px;
+            letter-spacing: 1.4px;
+            color: var(--groga);
         }
 
-        .brand-sub {
+        .brand-tagline {
             display: block;
             font-size: 0.72rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-top: 3px;
+            font-weight: 500;
+            color: var(--sidebar-muted);
+            margin-top: 4px;
         }
 
         .nav-list {
@@ -80,62 +89,63 @@
             text-align: left;
             background: transparent;
             border: 1px solid transparent;
-            padding: 13px 16px;
+            padding: 12px 14px;
             border-radius: 12px;
-            font-size: 0.92rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--sidebar-text);
             cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .nav-btn:hover {
-            background-color: rgba(255, 255, 255, 0.45);
+            background-color: rgba(255, 255, 255, 0.06);
         }
 
         .nav-btn.active {
-            background-color: var(--card-bg);
-            border-color: var(--border-color);
-            color: var(--warm-ochre);
-            box-shadow: 0 3px 10px rgba(46, 42, 37, 0.04);
+            background-color: var(--groga);
+            color: #1f1c16;
+            font-weight: 800;
+        }
+
+        .nav-btn.super-mode.active {
+            background-color: var(--olive);
+            color: #f9fcf9;
         }
 
         .sidebar-footer {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--sidebar-border);
         }
 
         .btn-exit-alert {
             width: 100%;
-            background-color: var(--warm-terracotta);
+            background-color: var(--rust);
             color: #fffaf5;
             border: none;
-            padding: 13px 14px;
+            padding: 12px 14px;
             border-radius: 12px;
-            font-size: 0.8rem;
+            font-size: 0.76rem;
             font-weight: 800;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.6px;
             cursor: pointer;
-            transition: opacity 0.2s ease;
-        }
-
-        .btn-exit-alert:active {
-            opacity: 0.88;
         }
 
         .clock-mini {
             text-align: center;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             font-weight: 700;
-            color: var(--text-muted);
+            color: var(--sidebar-muted);
         }
 
         /* Àrea principal */
         main.content {
             flex: 1;
             padding: 24px 28px;
-            overflow-y: auto;
+            min-width: 0;
             display: flex;
             flex-direction: column;
         }
@@ -145,7 +155,6 @@
             flex-direction: column;
             gap: 20px;
             flex: 1;
-            min-height: 0;
         }
 
         .view-section.active {
@@ -156,25 +165,26 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
+            padding-bottom: 14px;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
         }
 
         .page-header h1 {
-            font-size: 1.55rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: var(--text-main);
+            letter-spacing: -0.3px;
         }
 
         .page-header span {
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             font-weight: 600;
             color: var(--text-muted);
         }
 
-        /* Secció Calendari */
+        /* Calendari */
         .calendar-toolbar {
             display: flex;
             justify-content: space-between;
@@ -196,18 +206,16 @@
             background: transparent;
             border: none;
             border-radius: 9px;
-            padding: 9px 18px;
-            font-size: 0.86rem;
+            padding: 9px 16px;
+            font-size: 0.85rem;
             font-weight: 700;
             color: var(--text-muted);
             cursor: pointer;
-            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .mode-btn.active {
-            background-color: var(--card-bg);
-            color: var(--warm-ochre);
-            box-shadow: 0 2px 6px rgba(46, 42, 37, 0.06);
+            background-color: var(--sidebar-bg);
+            color: var(--groga);
         }
 
         .auth-helper-bar {
@@ -217,7 +225,7 @@
             flex-wrap: wrap;
         }
 
-        .btn-secondary-warm {
+        .btn-secondary-design {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
@@ -231,9 +239,8 @@
             align-items: center;
         }
 
-        .btn-secondary-warm:hover {
-            border-color: var(--warm-ochre);
-            color: var(--warm-ochre);
+        .btn-secondary-design:hover {
+            border-color: var(--groga);
         }
 
         .calendar-card {
@@ -243,30 +250,39 @@
             padding: 16px;
             box-shadow: var(--shadow);
             flex: 1;
-            min-height: 460px;
+            min-height: 440px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .auth-notice {
+        .calendar-status-bar {
             background-color: var(--tile-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
-            padding: 11px 14px;
+            padding: 10px 14px;
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-muted);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
+        }
+
+        .status-badge {
+            background-color: var(--groga-soft);
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 0.74rem;
+            padding: 4px 10px;
+            border-radius: 999px;
         }
 
         .calendar-frame-wrap {
             flex: 1;
-            min-height: 380px;
+            min-height: 360px;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border-color);
@@ -276,18 +292,17 @@
         .calendar-frame-wrap iframe {
             width: 100%;
             height: 100%;
-            min-height: 380px;
+            min-height: 360px;
             border: 0;
             display: block;
         }
 
-        /* Layout horitzontal per a la pantalla de compra */
+        /* Compra completa */
         .shopping-layout {
             display: grid;
             grid-template-columns: 1.55fr 1fr;
-            gap: 22px;
+            gap: 20px;
             align-items: start;
-            flex: 1;
         }
 
         .panel {
@@ -299,10 +314,10 @@
         }
 
         .panel-title {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.8px;
             color: var(--text-muted);
             margin-bottom: 14px;
         }
@@ -318,32 +333,28 @@
             border: 1px solid var(--border-color);
             border-radius: 14px;
             padding: 14px 10px;
-            min-height: 104px;
+            min-height: 102px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 8px;
             cursor: pointer;
-            transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
         .product-box:hover {
-            background-color: var(--tile-active);
-            border-color: var(--warm-ochre);
-        }
-
-        .product-box:active {
-            transform: scale(0.98);
+            background-color: var(--tile-hover);
+            border-color: var(--groga);
         }
 
         .product-box.selected {
-            background-color: var(--warm-ochre-soft);
-            border-color: var(--warm-ochre);
+            background-color: var(--groga-soft);
+            border-color: var(--groga);
         }
 
         .product-icon {
-            font-size: 1.75rem;
+            font-size: 1.7rem;
             line-height: 1;
         }
 
@@ -357,7 +368,7 @@
         .product-qty-badge {
             font-size: 0.72rem;
             font-weight: 800;
-            color: var(--warm-ochre);
+            color: var(--text-main);
             background-color: var(--card-bg);
             padding: 2px 8px;
             border-radius: 999px;
@@ -377,6 +388,7 @@
 
         .sporadic-input {
             flex: 1;
+            min-width: 0;
             background-color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 12px;
@@ -388,17 +400,18 @@
         }
 
         .sporadic-input:focus {
-            border-color: var(--warm-ochre);
+            border-color: var(--groga);
         }
 
         .btn-add-sporadic {
-            background-color: var(--warm-ochre);
-            color: #fffaf5;
+            background-color: var(--sidebar-bg);
+            color: var(--groga);
             border: none;
             border-radius: 12px;
             padding: 0 20px;
+            min-height: 44px;
             font-size: 0.88rem;
-            font-weight: 700;
+            font-weight: 800;
             cursor: pointer;
             white-space: nowrap;
         }
@@ -407,7 +420,7 @@
             display: flex;
             flex-direction: column;
             gap: 9px;
-            max-height: 410px;
+            max-height: 440px;
             overflow-y: auto;
         }
 
@@ -423,8 +436,14 @@
         }
 
         .cart-row.done {
-            opacity: 0.55;
+            opacity: 0.58;
+            background-color: var(--bg-main);
+        }
+
+        .cart-row.done .cart-item-title,
+        .cart-row.done .cart-item-qty {
             text-decoration: line-through;
+            color: var(--text-muted);
         }
 
         .cart-item-info {
@@ -432,6 +451,7 @@
             flex-direction: column;
             cursor: pointer;
             flex: 1;
+            min-width: 0;
         }
 
         .cart-item-title {
@@ -449,6 +469,7 @@
         .cart-actions {
             display: flex;
             gap: 6px;
+            flex-shrink: 0;
         }
 
         .btn-mini {
@@ -463,7 +484,121 @@
         }
 
         .btn-mini.remove {
-            color: var(--warm-terracotta);
+            color: var(--rust);
+        }
+
+        /* Vista "Només compra" pensada per al supermercat i el mòbil */
+        .super-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .super-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 760px;
+            width: 100%;
+        }
+
+        .super-item {
+            width: 100%;
+            text-align: left;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 18px;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+        }
+
+        .super-item:hover {
+            border-color: var(--groga);
+        }
+
+        .super-item.checked {
+            background-color: var(--tile-bg);
+            opacity: 0.62;
+        }
+
+        .super-item-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .super-check-box {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 9px;
+            border: 2px solid var(--groga);
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .super-item.checked .super-check-box {
+            background-color: var(--olive);
+            border-color: var(--olive);
+        }
+
+        .super-item-texts {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .super-item-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .super-item.checked .super-item-name {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .super-item-sub {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .super-item.checked .super-item-sub {
+            text-decoration: line-through;
+        }
+
+        .super-qty-pill {
+            background-color: var(--groga-soft);
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .super-item.checked .super-qty-pill {
+            background-color: var(--tile-bg);
+            color: var(--text-muted);
         }
 
         .empty-state {
@@ -474,16 +609,16 @@
             font-weight: 600;
         }
 
-        /* Modal per posar la quantitat i acceptar */
+        /* Modal quantitat */
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background-color: rgba(46, 42, 37, 0.35);
+            background-color: rgba(34, 32, 29, 0.38);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 50;
-            padding: 20px;
+            padding: 18px;
         }
 
         .modal-backdrop.open {
@@ -497,7 +632,7 @@
             border: 1px solid var(--border-color);
             border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 16px 40px rgba(46, 42, 37, 0.16);
+            box-shadow: 0 18px 42px rgba(34, 32, 29, 0.18);
             display: flex;
             flex-direction: column;
             gap: 18px;
@@ -559,7 +694,7 @@
         }
 
         .qty-input:focus {
-            border-color: var(--warm-ochre);
+            border-color: var(--groga);
         }
 
         .modal-buttons {
@@ -582,7 +717,7 @@
 
         .btn-accept {
             flex: 1.4;
-            background-color: var(--warm-sage);
+            background-color: var(--olive);
             border: none;
             border-radius: 12px;
             padding: 13px;
@@ -596,9 +731,127 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 18px;
-            padding: 28px;
+            padding: 24px;
             color: var(--text-muted);
             font-weight: 600;
+        }
+
+        /* Tauleta mitjana */
+        @media (max-width: 1024px) {
+            .everyday-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .shopping-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mòbil i orientació vertical */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            aside.sidebar {
+                width: 100%;
+                min-width: 0;
+                height: auto;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                padding: 12px 14px;
+                border-right: none;
+                border-bottom: 1px solid var(--sidebar-border);
+                gap: 10px;
+            }
+
+            .brand-box {
+                padding: 0;
+                border-bottom: none;
+                margin-bottom: 0;
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+            }
+
+            .brand-name {
+                font-size: 1.05rem;
+            }
+
+            .brand-tagline {
+                margin-top: 0;
+            }
+
+            .nav-list {
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 6px;
+                padding-bottom: 2px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-btn {
+                width: auto;
+                flex: 0 0 auto;
+                padding: 9px 12px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+                white-space: nowrap;
+            }
+
+            .sidebar-footer {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 8px;
+                gap: 10px;
+            }
+
+            .btn-exit-alert {
+                width: auto;
+                padding: 8px 12px;
+                font-size: 0.72rem;
+            }
+
+            main.content {
+                padding: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .everyday-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .sporadic-form {
+                flex-direction: column;
+            }
+
+            .btn-add-sporadic {
+                padding: 12px 16px;
+            }
+
+            .cart-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cart-actions {
+                justify-content: flex-end;
+            }
+
+            .calendar-card {
+                min-height: 360px;
+                padding: 12px;
+            }
+
+            .calendar-frame-wrap,
+            .calendar-frame-wrap iframe {
+                min-height: 300px;
+            }
         }
     </style>
 </head>
@@ -606,13 +859,14 @@
 
     <aside class="sidebar">
         <div>
-            <div class="brand-title">
-                Família Pla
-                <span class="brand-sub">Entrada de casa</span>
+            <div class="brand-box">
+                <div class="brand-name">CASAGROGA</div>
+                <span class="brand-tagline">Entrada i mòbil</span>
             </div>
-            <nav class="nav-list">
+            <nav class="nav-list" aria-label="Navegació principal">
                 <button class="nav-btn" data-view="home" onclick="switchView('home')">Inici</button>
                 <button class="nav-btn active" data-view="shopping" onclick="switchView('shopping')">Llista de la compra</button>
+                <button class="nav-btn super-mode" data-view="supermarket" onclick="switchView('supermarket')">Només compra</button>
                 <button class="nav-btn" data-view="calendar" onclick="switchView('calendar')">Calendari família</button>
             </nav>
         </div>
@@ -624,18 +878,18 @@
     </aside>
 
     <main class="content">
-        <!-- Pestanya d'Inici (reservada pel següent pas) -->
+        <!-- Pestanya d'Inici -->
         <section id="view-home" class="view-section">
             <div class="page-header">
-                <h1>Inici</h1>
-                <span>Preparat per al següent pas</span>
+                <h1>CASAGROGA</h1>
+                <span>Visió general</span>
             </div>
             <div class="placeholder-note">
-                Ja tenim la compra i el calendari familiar. Quan vulguis fem el següent bloc de l'inici.
+                Estructura responsive preparada per a tauleta en horitzontal i mòbil en vertical.
             </div>
         </section>
 
-        <!-- Pantalla de la Llista de la Compra -->
+        <!-- Pantalla completa de la Llista de la Compra -->
         <section id="view-shopping" class="view-section active">
             <div class="page-header">
                 <h1>Llista de la compra</h1>
@@ -669,6 +923,25 @@
             </div>
         </section>
 
+        <!-- Vista "Només compra" (supermercat / mòbil vertical) -->
+        <section id="view-supermarket" class="view-section">
+            <div class="page-header">
+                <h1>Només compra</h1>
+                <span id="super-progress">0 / 0 agafats</span>
+            </div>
+
+            <div class="super-toolbar">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);">
+                    Toca cada producte en agafar-lo per tatxar-lo.
+                </span>
+                <button type="button" class="btn-secondary-design" onclick="clearCheckedItems()">
+                    Esborrar tatxats
+                </button>
+            </div>
+
+            <div class="super-list" id="super-list"></div>
+        </section>
+
         <!-- Pantalla de Calendari de la Família (només visualització) -->
         <section id="view-calendar" class="view-section">
             <div class="page-header">
@@ -685,32 +958,25 @@
 
                 <div class="auth-helper-bar">
                     <a
-                        class="btn-secondary-warm"
+                        class="btn-secondary-design"
                         href="https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fembed%3Fsrc%3Dq7hema3qhbf475ptr3a4fuq7n0%2540group.calendar.google.com%26ctz%3DEurope%252FMadrid"
                         target="_blank"
                         rel="noopener noreferrer"
                     >
                         Iniciar sessió amb compte autoritzat
                     </a>
-                    <button type="button" class="btn-secondary-warm" onclick="reloadCalendarFrame()">
+                    <button type="button" class="btn-secondary-design" onclick="reloadCalendarFrame()">
                         Actualitzar vista
                     </button>
                 </div>
             </div>
 
             <div class="calendar-card">
-                <div class="auth-notice">
-                    <span>Si el calendari no es pot veure, inicia sessió al navegador amb el compte de Google que hi té accés i prem <strong>Actualitzar vista</strong>.</span>
+                <div class="calendar-status-bar">
+                    <span>Si no es veuen els esdeveniments, inicia sessió al navegador amb el compte que té permisos i prem <strong>Actualitzar vista</strong>.</span>
+                    <span class="status-badge" id="calendar-mode-label">Vista: Setmana</span>
                 </div>
-                <div class="calendar-frame-wrap">
-                    <iframe
-                        id="family-calendar-iframe"
-                        title="Calendari de la família"
-                        src=""
-                        frameborder="0"
-                        scrolling="no"
-                    ></iframe>
-                </div>
+                <div class="calendar-frame-wrap" id="calendar-frame-wrap"></div>
             </div>
         </section>
     </main>
@@ -746,9 +1012,15 @@
     </div>
 
     <script>
-        const STORAGE_KEY = 'familia_pla_compra_v1';
+        const STORAGE_KEY = 'casagroga_compra_v1';
         const CALENDAR_SRC = 'q7hema3qhbf475ptr3a4fuq7n0@group.calendar.google.com';
         const CALENDAR_TZ = 'Europe/Madrid';
+
+        const MODE_LABELS = {
+            DAY: 'Dia',
+            WEEK: 'Setmana',
+            MONTH: 'Mensual'
+        };
 
         const everydayProducts = [
             { id: 'llet', name: 'Llet', icon: '🥛', defaultQty: '2' },
@@ -782,14 +1054,35 @@
                 showPrint: '0',
                 showTabs: '0',
                 showCalendars: '0',
-                showTz: '0'
+                showTz: '0',
+                _refresh: String(Date.now())
             });
             return `https://calendar.google.com/calendar/embed?${params.toString()}`;
         }
 
+        function updateModeBadge(mode) {
+            const label = document.getElementById('calendar-mode-label');
+            if (label) {
+                label.textContent = `Vista: ${MODE_LABELS[mode] || mode}`;
+            }
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
+
         function loadCalendarFrame(mode = currentCalendarMode) {
-            const iframe = document.getElementById('family-calendar-iframe');
+            currentCalendarMode = mode;
+            updateModeBadge(mode);
+            const wrap = document.getElementById('calendar-frame-wrap');
+            wrap.innerHTML = '';
+
+            const iframe = document.createElement('iframe');
+            iframe.id = 'family-calendar-iframe';
+            iframe.title = 'Calendari de la família';
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('scrolling', 'no');
             iframe.src = buildCalendarUrl(mode);
+            wrap.appendChild(iframe);
             calendarLoadedOnce = true;
         }
 
@@ -798,10 +1091,6 @@
         }
 
         function setCalendarMode(mode) {
-            currentCalendarMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mode === mode);
-            });
             loadCalendarFrame(mode);
         }
 
@@ -828,6 +1117,9 @@
 
             if (viewName === 'calendar' && !calendarLoadedOnce) {
                 loadCalendarFrame(currentCalendarMode);
+            }
+            if (viewName === 'supermarket') {
+                renderSupermarketList();
             }
         }
 
@@ -877,6 +1169,7 @@
 
             if (shoppingItems.length === 0) {
                 listEl.innerHTML = '<div class="empty-state">Prem un requadre o afegeix un producte esporàdic.</div>';
+                renderSupermarketList();
                 return;
             }
 
@@ -896,6 +1189,55 @@
                 `;
                 listEl.appendChild(row);
             });
+
+            renderSupermarketList();
+        }
+
+        function renderSupermarketList() {
+            const listEl = document.getElementById('super-list');
+            const progressEl = document.getElementById('super-progress');
+            if (!listEl || !progressEl) return;
+
+            const total = shoppingItems.length;
+            const checkedCount = shoppingItems.filter(i => i.done).length;
+            progressEl.textContent = `${checkedCount} / ${total} agafats`;
+
+            if (total === 0) {
+                listEl.innerHTML = '<div class="empty-state">No hi ha cap producte a la llista de la compra.</div>';
+                return;
+            }
+
+            // Posem primer els pendents i a sota els ja tatxats
+            const orderedIndices = [
+                ...shoppingItems.map((item, idx) => ({ item, idx })).filter(x => !x.item.done),
+                ...shoppingItems.map((item, idx) => ({ item, idx })).filter(x => x.item.done)
+            ];
+
+            listEl.innerHTML = '';
+            orderedIndices.forEach(({ item, idx }) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `super-item${item.done ? ' checked' : ''}`;
+                btn.onclick = () => toggleDone(idx);
+                btn.innerHTML = `
+                    <div class="super-item-main">
+                        <span class="super-check-box">${item.done ? '✓' : ''}</span>
+                        <div class="super-item-texts">
+                            <span class="super-item-name">${item.icon ? item.icon + ' ' : ''}${escapeHtml(item.name)}</span>
+                            <span class="super-item-sub">${item.done ? 'Agafat — prem per desmarcar' : 'Pendent — prem en agafar-lo'}</span>
+                        </div>
+                    </div>
+                    <span class="super-qty-pill">${escapeHtml(item.quantity)}</span>
+                `;
+                listEl.appendChild(btn);
+            });
+        }
+
+        function clearCheckedItems() {
+            shoppingItems = shoppingItems.filter(item => !item.done);
+            saveShoppingItems();
+            renderEverydayGrid();
+            renderCartList();
         }
 
         function openQuantityModal(name, icon, initialQty) {
