@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Família Pla — Compra i Entrada</title>
+    <title>Família Pla — Compra i Calendari</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -144,7 +144,8 @@
             display: none;
             flex-direction: column;
             gap: 20px;
-            height: 100%;
+            flex: 1;
+            min-height: 0;
         }
 
         .view-section.active {
@@ -154,7 +155,9 @@
         .page-header {
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 12px;
         }
@@ -169,6 +172,113 @@
             font-size: 0.85rem;
             font-weight: 600;
             color: var(--text-muted);
+        }
+
+        /* Secció Calendari */
+        .calendar-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mode-switch {
+            display: inline-flex;
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            padding: 9px 18px;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .mode-btn.active {
+            background-color: var(--card-bg);
+            color: var(--warm-ochre);
+            box-shadow: 0 2px 6px rgba(46, 42, 37, 0.06);
+        }
+
+        .auth-helper-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary-warm {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 11px;
+            padding: 9px 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-secondary-warm:hover {
+            border-color: var(--warm-ochre);
+            color: var(--warm-ochre);
+        }
+
+        .calendar-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-height: 460px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .auth-notice {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 11px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-frame-wrap {
+            flex: 1;
+            min-height: 380px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+        }
+
+        .calendar-frame-wrap iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 380px;
+            border: 0;
+            display: block;
         }
 
         /* Layout horitzontal per a la pantalla de compra */
@@ -197,7 +307,6 @@
             margin-bottom: 14px;
         }
 
-        /* Requadres quotidians: pictograma a dalt i nom a sota dins el requadre */
         .everyday-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -255,7 +364,6 @@
             border: 1px solid var(--border-color);
         }
 
-        /* Camp per a compres esporàdiques o no freqüents */
         .sporadic-box {
             margin-top: 20px;
             padding-top: 16px;
@@ -295,7 +403,6 @@
             white-space: nowrap;
         }
 
-        /* Llista activa a la dreta */
         .cart-list {
             display: flex;
             flex-direction: column;
@@ -506,6 +613,7 @@
             <nav class="nav-list">
                 <button class="nav-btn" data-view="home" onclick="switchView('home')">Inici</button>
                 <button class="nav-btn active" data-view="shopping" onclick="switchView('shopping')">Llista de la compra</button>
+                <button class="nav-btn" data-view="calendar" onclick="switchView('calendar')">Calendari família</button>
             </nav>
         </div>
 
@@ -523,7 +631,7 @@
                 <span>Preparat per al següent pas</span>
             </div>
             <div class="placeholder-note">
-                Ara estem construint la pantalla de la compra pas a pas. Prem <strong>Llista de la compra</strong> al menú per treballar-hi.
+                Ja tenim la compra i el calendari familiar. Quan vulguis fem el següent bloc de l'inici.
             </div>
         </section>
 
@@ -535,7 +643,6 @@
             </div>
 
             <div class="shopping-layout">
-                <!-- Esquerra: Requadres quotidians + compres esporàdiques -->
                 <div class="panel">
                     <div class="panel-title">Productes quotidians</div>
                     <div class="everyday-grid" id="everyday-grid"></div>
@@ -555,10 +662,54 @@
                     </div>
                 </div>
 
-                <!-- Dreta: Llista activa -->
                 <div class="panel">
                     <div class="panel-title">A comprar</div>
                     <div class="cart-list" id="cart-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pantalla de Calendari de la Família (només visualització) -->
+        <section id="view-calendar" class="view-section">
+            <div class="page-header">
+                <h1>Calendari de la família</h1>
+                <span>Només visualització</span>
+            </div>
+
+            <div class="calendar-toolbar">
+                <div class="mode-switch" role="group" aria-label="Vista del calendari">
+                    <button type="button" class="mode-btn" data-mode="DAY" onclick="setCalendarMode('DAY')">Dia</button>
+                    <button type="button" class="mode-btn active" data-mode="WEEK" onclick="setCalendarMode('WEEK')">Setmana</button>
+                    <button type="button" class="mode-btn" data-mode="MONTH" onclick="setCalendarMode('MONTH')">Mensual</button>
+                </div>
+
+                <div class="auth-helper-bar">
+                    <a
+                        class="btn-secondary-warm"
+                        href="https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fembed%3Fsrc%3Dq7hema3qhbf475ptr3a4fuq7n0%2540group.calendar.google.com%26ctz%3DEurope%252FMadrid"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Iniciar sessió amb compte autoritzat
+                    </a>
+                    <button type="button" class="btn-secondary-warm" onclick="reloadCalendarFrame()">
+                        Actualitzar vista
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-card">
+                <div class="auth-notice">
+                    <span>Si el calendari no es pot veure, inicia sessió al navegador amb el compte de Google que hi té accés i prem <strong>Actualitzar vista</strong>.</span>
+                </div>
+                <div class="calendar-frame-wrap">
+                    <iframe
+                        id="family-calendar-iframe"
+                        title="Calendari de la família"
+                        src=""
+                        frameborder="0"
+                        scrolling="no"
+                    ></iframe>
                 </div>
             </div>
         </section>
@@ -596,6 +747,8 @@
 
     <script>
         const STORAGE_KEY = 'familia_pla_compra_v1';
+        const CALENDAR_SRC = 'q7hema3qhbf475ptr3a4fuq7n0@group.calendar.google.com';
+        const CALENDAR_TZ = 'Europe/Madrid';
 
         const everydayProducts = [
             { id: 'llet', name: 'Llet', icon: '🥛', defaultQty: '2' },
@@ -614,6 +767,43 @@
 
         let shoppingItems = loadShoppingItems();
         let pendingItem = null;
+        let currentCalendarMode = 'WEEK';
+        let calendarLoadedOnce = false;
+
+        function buildCalendarUrl(mode) {
+            const params = new URLSearchParams({
+                src: CALENDAR_SRC,
+                ctz: CALENDAR_TZ,
+                mode: mode,
+                hl: 'ca',
+                showTitle: '0',
+                showNav: '1',
+                showDate: '1',
+                showPrint: '0',
+                showTabs: '0',
+                showCalendars: '0',
+                showTz: '0'
+            });
+            return `https://calendar.google.com/calendar/embed?${params.toString()}`;
+        }
+
+        function loadCalendarFrame(mode = currentCalendarMode) {
+            const iframe = document.getElementById('family-calendar-iframe');
+            iframe.src = buildCalendarUrl(mode);
+            calendarLoadedOnce = true;
+        }
+
+        function reloadCalendarFrame() {
+            loadCalendarFrame(currentCalendarMode);
+        }
+
+        function setCalendarMode(mode) {
+            currentCalendarMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            loadCalendarFrame(mode);
+        }
 
         function loadShoppingItems() {
             try {
@@ -635,6 +825,10 @@
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.view === viewName);
             });
+
+            if (viewName === 'calendar' && !calendarLoadedOnce) {
+                loadCalendarFrame(currentCalendarMode);
+            }
         }
 
         function triggerExitAlert() {
