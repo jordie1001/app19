@@ -41,7 +41,6 @@
             width: 100%;
         }
 
-        /* Barra lateral (escriptori / tauleta horitzontal) */
         aside.sidebar {
             width: 248px;
             min-width: 248px;
@@ -141,7 +140,6 @@
             color: var(--sidebar-muted);
         }
 
-        /* Àrea principal */
         main.content {
             flex: 1;
             padding: 24px 28px;
@@ -184,7 +182,6 @@
             color: var(--text-muted);
         }
 
-        /* Calendari */
         .calendar-toolbar {
             display: flex;
             justify-content: space-between;
@@ -297,7 +294,6 @@
             display: block;
         }
 
-        /* Compra completa */
         .shopping-layout {
             display: grid;
             grid-template-columns: 1.55fr 1fr;
@@ -487,7 +483,6 @@
             color: var(--rust);
         }
 
-        /* Vista "Només compra" pensada per al supermercat i el mòbil */
         .super-toolbar {
             display: flex;
             justify-content: space-between;
@@ -609,7 +604,6 @@
             font-weight: 600;
         }
 
-        /* Modal quantitat */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -736,7 +730,6 @@
             font-weight: 600;
         }
 
-        /* Tauleta mitjana */
         @media (max-width: 1024px) {
             .everyday-grid {
                 grid-template-columns: repeat(3, 1fr);
@@ -746,7 +739,6 @@
             }
         }
 
-        /* Mòbil i orientació vertical */
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
@@ -878,22 +870,20 @@
     </aside>
 
     <main class="content">
-        <!-- Pestanya d'Inici -->
         <section id="view-home" class="view-section">
             <div class="page-header">
                 <h1>CASAGROGA</h1>
                 <span>Visió general</span>
             </div>
             <div class="placeholder-note">
-                Estructura responsive preparada per a tauleta en horitzontal i mòbil en vertical.
+                Sincronització en temps real de la llista de la compra activada amb Firebase.
             </div>
         </section>
 
-        <!-- Pantalla completa de la Llista de la Compra -->
         <section id="view-shopping" class="view-section active">
             <div class="page-header">
                 <h1>Llista de la compra</h1>
-                <span id="shopping-summary">0 productes a demanar</span>
+                <span id="shopping-summary">Sincronitzant...</span>
             </div>
 
             <div class="shopping-layout">
@@ -923,7 +913,6 @@
             </div>
         </section>
 
-        <!-- Vista "Només compra" (supermercat / mòbil vertical) -->
         <section id="view-supermarket" class="view-section">
             <div class="page-header">
                 <h1>Només compra</h1>
@@ -942,7 +931,6 @@
             <div class="super-list" id="super-list"></div>
         </section>
 
-        <!-- Pantalla de Calendari de la Família (només visualització) -->
         <section id="view-calendar" class="view-section">
             <div class="page-header">
                 <h1>Calendari de la família</h1>
@@ -981,7 +969,6 @@
         </section>
     </main>
 
-    <!-- Finestra per indicar la quantitat i acceptar -->
     <div class="modal-backdrop" id="qty-modal" onclick="closeModalOnBackdrop(event)">
         <div class="modal-card">
             <div class="modal-header-row">
@@ -1011,8 +998,24 @@
         </div>
     </div>
 
-    <script>
-        const STORAGE_KEY = 'casagroga_compra_v1';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBApZq5qvq6yPy59kmD6E0h4-wuNsNQXGk",
+            authDomain: "app19-20b57.firebaseapp.com",
+            databaseURL: "https://app19-20b57-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "app19-20b57",
+            storageBucket: "app19-20b57.firebasestorage.app",
+            messagingSenderId: "517817208702",
+            appId: "1:517817208702:web:188b5e57a9b1d7a9eaad2f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const shoppingRef = ref(db, 'shoppingList');
+
         const CALENDAR_SRC = 'q7hema3qhbf475ptr3a4fuq7n0@group.calendar.google.com';
         const CALENDAR_TZ = 'Europe/Madrid';
 
@@ -1037,10 +1040,49 @@
             { id: 'neteja', name: 'Neteja', icon: '🧼', defaultQty: '1' }
         ];
 
-        let shoppingItems = loadShoppingItems();
+        window.shoppingItems = [];
         let pendingItem = null;
         let currentCalendarMode = 'WEEK';
         let calendarLoadedOnce = false;
+
+        onValue(shoppingRef, (snapshot) => {
+            const data = snapshot.val();
+            window.shoppingItems = Array.isArray(data) ? data : [];
+            renderEverydayGrid();
+            renderCartList();
+            renderSupermarketList();
+        });
+
+        function saveShoppingItems() {
+            set(shoppingRef, window.shoppingItems);
+        }
+
+        window.switchView = function(viewName) {
+            document.querySelectorAll('.view-section').forEach(sec => {
+                sec.classList.toggle('active', sec.id === `view-${viewName}`);
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.view === viewName);
+            });
+
+            if (viewName === 'calendar' && !calendarLoadedOnce) {
+                loadCalendarFrame(currentCalendarMode);
+            }
+            if (viewName === 'supermarket') {
+                renderSupermarketList();
+            }
+        };
+
+        window.triggerExitAlert = function() {
+            alert('Avís registrat: sortida de casa.');
+        };
+
+        function updateClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('side-clock').textContent = `${hh}:${mm}`;
+        }
 
         function buildCalendarUrl(mode) {
             const params = new URLSearchParams({
@@ -1086,60 +1128,21 @@
             calendarLoadedOnce = true;
         }
 
-        function reloadCalendarFrame() {
+        window.reloadCalendarFrame = function() {
             loadCalendarFrame(currentCalendarMode);
-        }
+        };
 
-        function setCalendarMode(mode) {
+        window.setCalendarMode = function(mode) {
             loadCalendarFrame(mode);
-        }
-
-        function loadShoppingItems() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : [];
-            } catch (e) {
-                return [];
-            }
-        }
-
-        function saveShoppingItems() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(shoppingItems));
-        }
-
-        function switchView(viewName) {
-            document.querySelectorAll('.view-section').forEach(sec => {
-                sec.classList.toggle('active', sec.id === `view-${viewName}`);
-            });
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.view === viewName);
-            });
-
-            if (viewName === 'calendar' && !calendarLoadedOnce) {
-                loadCalendarFrame(currentCalendarMode);
-            }
-            if (viewName === 'supermarket') {
-                renderSupermarketList();
-            }
-        }
-
-        function triggerExitAlert() {
-            alert('Avís registrat: sortida de casa.');
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2, '0');
-            const mm = String(now.getMinutes()).padStart(2, '0');
-            document.getElementById('side-clock').textContent = `${hh}:${mm}`;
-        }
+        };
 
         function renderEverydayGrid() {
             const grid = document.getElementById('everyday-grid');
+            if (!grid) return;
             grid.innerHTML = '';
 
             everydayProducts.forEach(prod => {
-                const existing = shoppingItems.find(item => item.name.toLowerCase() === prod.name.toLowerCase() && !item.done);
+                const existing = window.shoppingItems.find(item => item.name.toLowerCase() === prod.name.toLowerCase() && !item.done);
                 const box = document.createElement('button');
                 box.type = 'button';
                 box.className = `product-box${existing ? ' selected' : ''}`;
@@ -1161,20 +1164,21 @@
         function renderCartList() {
             const listEl = document.getElementById('cart-list');
             const summaryEl = document.getElementById('shopping-summary');
-            const activeCount = shoppingItems.filter(i => !i.done).length;
+            if (!listEl || !summaryEl) return;
+
+            const activeCount = window.shoppingItems.filter(i => !i.done).length;
 
             summaryEl.textContent = activeCount === 1
                 ? '1 producte a demanar'
                 : `${activeCount} productes a demanar`;
 
-            if (shoppingItems.length === 0) {
+            if (window.shoppingItems.length === 0) {
                 listEl.innerHTML = '<div class="empty-state">Prem un requadre o afegeix un producte esporàdic.</div>';
-                renderSupermarketList();
                 return;
             }
 
             listEl.innerHTML = '';
-            shoppingItems.forEach((item, index) => {
+            window.shoppingItems.forEach((item, index) => {
                 const row = document.createElement('div');
                 row.className = `cart-row${item.done ? ' done' : ''}`;
                 row.innerHTML = `
@@ -1189,8 +1193,6 @@
                 `;
                 listEl.appendChild(row);
             });
-
-            renderSupermarketList();
         }
 
         function renderSupermarketList() {
@@ -1198,8 +1200,8 @@
             const progressEl = document.getElementById('super-progress');
             if (!listEl || !progressEl) return;
 
-            const total = shoppingItems.length;
-            const checkedCount = shoppingItems.filter(i => i.done).length;
+            const total = window.shoppingItems.length;
+            const checkedCount = window.shoppingItems.filter(i => i.done).length;
             progressEl.textContent = `${checkedCount} / ${total} agafats`;
 
             if (total === 0) {
@@ -1207,10 +1209,9 @@
                 return;
             }
 
-            // Posem primer els pendents i a sota els ja tatxats
             const orderedIndices = [
-                ...shoppingItems.map((item, idx) => ({ item, idx })).filter(x => !x.item.done),
-                ...shoppingItems.map((item, idx) => ({ item, idx })).filter(x => x.item.done)
+                ...window.shoppingItems.map((item, idx) => ({ item, idx })).filter(x => !x.item.done),
+                ...window.shoppingItems.map((item, idx) => ({ item, idx })).filter(x => x.item.done)
             ];
 
             listEl.innerHTML = '';
@@ -1233,12 +1234,10 @@
             });
         }
 
-        function clearCheckedItems() {
-            shoppingItems = shoppingItems.filter(item => !item.done);
+        window.clearCheckedItems = function() {
+            window.shoppingItems = window.shoppingItems.filter(item => !item.done);
             saveShoppingItems();
-            renderEverydayGrid();
-            renderCartList();
-        }
+        };
 
         function openQuantityModal(name, icon, initialQty) {
             pendingItem = { name, icon };
@@ -1253,18 +1252,18 @@
             }, 40);
         }
 
-        function closeQuantityModal() {
+        window.closeQuantityModal = function() {
             pendingItem = null;
             document.getElementById('qty-modal').classList.remove('open');
-        }
+        };
 
-        function closeModalOnBackdrop(event) {
+        window.closeModalOnBackdrop = function(event) {
             if (event.target.id === 'qty-modal') {
                 closeQuantityModal();
             }
-        }
+        };
 
-        function stepQuantity(delta) {
+        window.stepQuantity = function(delta) {
             const input = document.getElementById('modal-qty-input');
             const parsed = parseFloat(input.value.replace(',', '.'));
             if (!isNaN(parsed)) {
@@ -1273,25 +1272,25 @@
             } else {
                 input.value = '1';
             }
-        }
+        };
 
-        function acceptQuantity() {
+        window.acceptQuantity = function() {
             if (!pendingItem) return;
             const rawQty = document.getElementById('modal-qty-input').value.trim();
             const quantity = rawQty || '1';
 
-            const existingIndex = shoppingItems.findIndex(
+            const existingIndex = window.shoppingItems.findIndex(
                 i => i.name.toLowerCase() === pendingItem.name.toLowerCase()
             );
 
             if (existingIndex >= 0) {
-                shoppingItems[existingIndex].quantity = quantity;
-                shoppingItems[existingIndex].done = false;
+                window.shoppingItems[existingIndex].quantity = quantity;
+                window.shoppingItems[existingIndex].done = false;
                 if (pendingItem.icon) {
-                    shoppingItems[existingIndex].icon = pendingItem.icon;
+                    window.shoppingItems[existingIndex].icon = pendingItem.icon;
                 }
             } else {
-                shoppingItems.unshift({
+                window.shoppingItems.unshift({
                     name: pendingItem.name,
                     icon: pendingItem.icon || '🛍️',
                     quantity,
@@ -1300,47 +1299,41 @@
             }
 
             saveShoppingItems();
-            renderEverydayGrid();
-            renderCartList();
             closeQuantityModal();
-        }
+        };
 
-        function handleModalKey(event) {
+        window.handleModalKey = function(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 acceptQuantity();
             } else if (event.key === 'Escape') {
                 closeQuantityModal();
             }
-        }
+        };
 
-        function handleSporadicSubmit(event) {
+        window.handleSporadicSubmit = function(event) {
             event.preventDefault();
             const input = document.getElementById('sporadic-input');
             const name = input.value.trim();
             if (!name) return;
             input.value = '';
             openQuantityModal(name, '🛍️', '1');
-        }
+        };
 
-        function toggleDone(index) {
-            shoppingItems[index].done = !shoppingItems[index].done;
+        window.toggleDone = function(index) {
+            window.shoppingItems[index].done = !window.shoppingItems[index].done;
             saveShoppingItems();
-            renderEverydayGrid();
-            renderCartList();
-        }
+        };
 
-        function editCartItem(index) {
-            const item = shoppingItems[index];
+        window.editCartItem = function(index) {
+            const item = window.shoppingItems[index];
             openQuantityModal(item.name, item.icon || '🛍️', item.quantity);
-        }
+        };
 
-        function removeCartItem(index) {
-            shoppingItems.splice(index, 1);
+        window.removeCartItem = function(index) {
+            window.shoppingItems.splice(index, 1);
             saveShoppingItems();
-            renderEverydayGrid();
-            renderCartList();
-        }
+        };
 
         function escapeHtml(text) {
             return String(text)
@@ -1352,8 +1345,6 @@
 
         updateClock();
         setInterval(updateClock, 1000);
-        renderEverydayGrid();
-        renderCartList();
     </script>
 </body>
 </html>
