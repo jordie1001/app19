@@ -1,21 +1,1006 @@
-<script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASAGROGA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-main: #f7f6f2;
+            --sidebar-bg: #262522;
+            --sidebar-border: #383631;
+            --sidebar-text: #f3efe6;
+            --sidebar-muted: #a69f92;
+            --card-bg: #fffefa;
+            --tile-bg: #f1eee7;
+            --tile-hover: #e7e1d5;
+            --text-main: #22201d;
+            --text-muted: #6c665c;
+            --groga: #d49a2a;
+            --groga-soft: #f7ebd0;
+            --olive: #4d6b53;
+            --rust: #b55239;
+            --border-color: #e4dfd5;
+            --shadow: 0 10px 28px rgba(34, 32, 29, 0.05);
+        }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBApZq5qvq6yPy59kmD6E0h4-wuNsNQXGk",
-            authDomain: "app19-20b57.firebaseapp.com",
-            databaseURL: "https://app19-20b57-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "app19-20b57",
-            storageBucket: "app19-20b57.firebasestorage.app",
-            messagingSenderId: "517817208702",
-            appId: "1:517817208702:web:188b5e57a9b1d7a9eaad2f"
-        };
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const shoppingRef = ref(db, 'shoppingList');
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+            width: 100%;
+        }
 
+        aside.sidebar {
+            width: 248px;
+            min-width: 248px;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: var(--sidebar-text);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .brand-box {
+            padding: 4px 10px 22px;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 18px;
+        }
+
+        .brand-name {
+            font-size: 1.25rem;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            color: var(--groga);
+        }
+
+        .brand-tagline {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--sidebar-muted);
+            margin-top: 4px;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--sidebar-text);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-btn.active {
+            background-color: var(--groga);
+            color: #1f1c16;
+            font-weight: 800;
+        }
+
+        .nav-btn.super-mode.active {
+            background-color: var(--olive);
+            color: #f9fcf9;
+        }
+
+        .sidebar-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--sidebar-border);
+        }
+
+        .btn-exit-alert {
+            width: 100%;
+            background-color: var(--rust);
+            color: #fffaf5;
+            border: none;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            cursor: pointer;
+        }
+
+        .clock-mini {
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--sidebar-muted);
+        }
+
+        main.content {
+            flex: 1;
+            padding: 24px 28px;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view-section {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .view-section.active {
+            display: flex;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.3px;
+        }
+
+        .page-header span {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .calendar-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .mode-switch {
+            display: inline-flex;
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            border-radius: 9px;
+            padding: 9px 16px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background-color: var(--sidebar-bg);
+            color: var(--groga);
+        }
+
+        .auth-helper-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-secondary-design {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 11px;
+            padding: 9px 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-secondary-design:hover {
+            border-color: var(--groga);
+        }
+
+        .calendar-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+            flex: 1;
+            min-height: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .calendar-status-bar {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            background-color: var(--groga-soft);
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 0.74rem;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .calendar-frame-wrap {
+            flex: 1;
+            min-height: 360px;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background-color: #ffffff;
+        }
+
+        .calendar-frame-wrap iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 360px;
+            border: 0;
+            display: block;
+        }
+
+        .shopping-layout {
+            display: grid;
+            grid-template-columns: 1.55fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            margin-bottom: 14px;
+        }
+
+        .everyday-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .product-box {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 14px 10px;
+            min-height: 102px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .product-box:hover {
+            background-color: var(--tile-hover);
+            border-color: var(--groga);
+        }
+
+        .product-box.selected {
+            background-color: var(--groga-soft);
+            border-color: var(--groga);
+        }
+
+        .product-icon {
+            font-size: 1.7rem;
+            line-height: 1;
+        }
+
+        .product-name {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        .product-qty-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-main);
+            background-color: var(--card-bg);
+            padding: 2px 8px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sporadic-box {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .sporadic-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .sporadic-input {
+            flex: 1;
+            min-width: 0;
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .sporadic-input:focus {
+            border-color: var(--groga);
+        }
+
+        .btn-add-sporadic {
+            background-color: var(--sidebar-bg);
+            color: var(--groga);
+            border: none;
+            border-radius: 12px;
+            padding: 0 20px;
+            min-height: 44px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cart-list {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            max-height: 440px;
+            overflow-y: auto;
+        }
+
+        .cart-row {
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .cart-row.done {
+            opacity: 0.58;
+            background-color: var(--bg-main);
+        }
+
+        .cart-row.done .cart-item-title,
+        .cart-row.done .cart-item-qty {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .cart-item-info {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-item-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .cart-item-qty {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .cart-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-mini {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 6px 10px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .btn-mini.remove {
+            color: var(--rust);
+        }
+
+        .super-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .super-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 760px;
+            width: 100%;
+        }
+
+        .super-item {
+            width: 100%;
+            text-align: left;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 16px 18px;
+            min-height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            cursor: pointer;
+            touch-action: manipulation;
+            box-shadow: var(--shadow);
+            transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+        }
+
+        .super-item:hover {
+            border-color: var(--groga);
+        }
+
+        .super-item.checked {
+            background-color: var(--tile-bg);
+            opacity: 0.62;
+        }
+
+        .super-item-main {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .super-check-box {
+            width: 28px;
+            height: 28px;
+            min-width: 28px;
+            border-radius: 9px;
+            border: 2px solid var(--groga);
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .super-item.checked .super-check-box {
+            background-color: var(--olive);
+            border-color: var(--olive);
+        }
+
+        .super-item-texts {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .super-item-name {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .super-item.checked .super-item-name {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .super-item-sub {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .super-item.checked .super-item-sub {
+            text-decoration: line-through;
+        }
+
+        .super-qty-pill {
+            background-color: var(--groga-soft);
+            color: var(--text-main);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.84rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .super-item.checked .super-qty-pill {
+            background-color: var(--tile-bg);
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 36px 16px;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+        }
+
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(34, 32, 29, 0.38);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 18px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 400px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 18px 42px rgba(34, 32, 29, 0.18);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .modal-header-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .modal-icon {
+            font-size: 2rem;
+            background-color: var(--tile-bg);
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .qty-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .qty-step-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            background-color: var(--tile-bg);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .qty-input {
+            flex: 1;
+            height: 52px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            background-color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-main);
+            outline: none;
+        }
+
+        .qty-input:focus {
+            border-color: var(--groga);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background-color: var(--tile-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-accept {
+            flex: 1.4;
+            background-color: var(--olive);
+            border: none;
+            border-radius: 12px;
+            padding: 13px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #f9fcf9;
+            cursor: pointer;
+        }
+
+        .placeholder-note {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 18px;
+            padding: 24px;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .everyday-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .shopping-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            aside.sidebar {
+                width: 100%;
+                min-width: 0;
+                height: auto;
+                position: sticky;
+                top: 0;
+                z-index: 20;
+                padding: 12px 14px;
+                border-right: none;
+                border-bottom: 1px solid var(--sidebar-border);
+                gap: 10px;
+            }
+
+            .brand-box {
+                padding: 0;
+                border-bottom: none;
+                margin-bottom: 0;
+                display: flex;
+                align-items: baseline;
+                justify-content: space-between;
+            }
+
+            .brand-name {
+                font-size: 1.05rem;
+            }
+
+            .brand-tagline {
+                margin-top: 0;
+            }
+
+            .nav-list {
+                flex-direction: row;
+                overflow-x: auto;
+                gap: 6px;
+                padding-bottom: 2px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-btn {
+                width: auto;
+                flex: 0 0 auto;
+                padding: 9px 12px;
+                font-size: 0.8rem;
+                border-radius: 10px;
+                white-space: nowrap;
+            }
+
+            .sidebar-footer {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding-top: 8px;
+                gap: 10px;
+            }
+
+            .btn-exit-alert {
+                width: auto;
+                padding: 8px 12px;
+                font-size: 0.72rem;
+            }
+
+            main.content {
+                padding: 16px;
+            }
+
+            .page-header h1 {
+                font-size: 1.25rem;
+            }
+
+            .everyday-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .sporadic-form {
+                flex-direction: column;
+            }
+
+            .btn-add-sporadic {
+                padding: 12px 16px;
+            }
+
+            .cart-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .cart-actions {
+                justify-content: flex-end;
+            }
+
+            .calendar-card {
+                min-height: 360px;
+                padding: 12px;
+            }
+
+            .calendar-frame-wrap,
+            .calendar-frame-wrap iframe {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div>
+            <div class="brand-box">
+                <div class="brand-name">CASAGROGA</div>
+                <span class="brand-tagline">Entrada i mòbil</span>
+            </div>
+            <nav class="nav-list" aria-label="Navegació principal">
+                <button class="nav-btn" data-view="home" onclick="switchView('home')">Inici</button>
+                <button class="nav-btn active" data-view="shopping" onclick="switchView('shopping')">Llista de la compra</button>
+                <button class="nav-btn super-mode" data-view="supermarket" onclick="switchView('supermarket')">Només compra</button>
+                <button class="nav-btn" data-view="calendar" onclick="switchView('calendar')">Calendari família</button>
+            </nav>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-exit-alert" onclick="triggerExitAlert()">AVÍS SORTIDA</button>
+            <div class="clock-mini" id="side-clock">--:--</div>
+        </div>
+    </aside>
+
+    <main class="content">
+        <section id="view-home" class="view-section">
+            <div class="page-header">
+                <h1>CASAGROGA</h1>
+                <span>Visió general</span>
+            </div>
+            <div class="placeholder-note">
+                Sincronització en temps real de la llista de la compra activada amb Firebase.
+            </div>
+        </section>
+
+        <section id="view-shopping" class="view-section active">
+            <div class="page-header">
+                <h1>Llista de la compra</h1>
+                <span id="shopping-summary">0 productes a demanar</span>
+            </div>
+
+            <div class="shopping-layout">
+                <div class="panel">
+                    <div class="panel-title">Productes quotidians</div>
+                    <div class="everyday-grid" id="everyday-grid"></div>
+
+                    <div class="sporadic-box">
+                        <div class="panel-title">Compra esporàdica o no freqüent</div>
+                        <form class="sporadic-form" onsubmit="handleSporadicSubmit(event)">
+                            <input
+                                type="text"
+                                id="sporadic-input"
+                                class="sporadic-input"
+                                placeholder="Ex: piles AAA, paper de forn, espelmes..."
+                                autocomplete="off"
+                            >
+                            <button type="submit" class="btn-add-sporadic">Afegir</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-title">A comprar</div>
+                    <div class="cart-list" id="cart-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-supermarket" class="view-section">
+            <div class="page-header">
+                <h1>Només compra</h1>
+                <span id="super-progress">0 / 0 agafats</span>
+            </div>
+
+            <div class="super-toolbar">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);">
+                    Toca cada producte en agafar-lo per tatxar-lo.
+                </span>
+                <button type="button" class="btn-secondary-design" onclick="clearCheckedItems()">
+                    Esborrar tatxats
+                </button>
+            </div>
+
+            <div class="super-list" id="super-list"></div>
+        </section>
+
+        <section id="view-calendar" class="view-section">
+            <div class="page-header">
+                <h1>Calendari de la família</h1>
+                <span>Només visualització</span>
+            </div>
+
+            <div class="calendar-toolbar">
+                <div class="mode-switch" role="group" aria-label="Vista del calendari">
+                    <button type="button" class="mode-btn" data-mode="DAY" onclick="setCalendarMode('DAY')">Dia</button>
+                    <button type="button" class="mode-btn active" data-mode="WEEK" onclick="setCalendarMode('WEEK')">Setmana</button>
+                    <button type="button" class="mode-btn" data-mode="MONTH" onclick="setCalendarMode('MONTH')">Mensual</button>
+                </div>
+
+                <div class="auth-helper-bar">
+                    <a
+                        class="btn-secondary-design"
+                        href="https://accounts.google.com/ServiceLogin?continue=https%3A%2F%2Fcalendar.google.com%2Fcalendar%2Fembed%3Fsrc%3Dq7hema3qhbf475ptr3a4fuq7n0%2540group.calendar.google.com%26ctz%3DEurope%252FMadrid"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Iniciar sessió amb compte autoritzat
+                    </a>
+                    <button type="button" class="btn-secondary-design" onclick="reloadCalendarFrame()">
+                        Actualitzar vista
+                    </button>
+                </div>
+            </div>
+
+            <div class="calendar-card">
+                <div class="calendar-status-bar">
+                    <span>Si no es veuen els esdeveniments, inicia sessió al navegador amb el compte que té permisos i prem <strong>Actualitzar vista</strong>.</span>
+                    <span class="status-badge" id="calendar-mode-label">Vista: Setmana</span>
+                </div>
+                <div class="calendar-frame-wrap" id="calendar-frame-wrap"></div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-backdrop" id="qty-modal" onclick="closeModalOnBackdrop(event)">
+        <div class="modal-card">
+            <div class="modal-header-row">
+                <div class="modal-icon" id="modal-icon">🛒</div>
+                <div>
+                    <div class="modal-title" id="modal-product-name">Producte</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">Indica la quantitat a demanar</div>
+                </div>
+            </div>
+
+            <div class="qty-stepper">
+                <button type="button" class="qty-step-btn" onclick="stepQuantity(-1)">-</button>
+                <input
+                    type="text"
+                    id="modal-qty-input"
+                    class="qty-input"
+                    value="1"
+                    onkeydown="handleModalKey(event)"
+                >
+                <button type="button" class="qty-step-btn" onclick="stepQuantity(1)">+</button>
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeQuantityModal()">Cancel·lar</button>
+                <button type="button" class="btn-accept" onclick="acceptQuantity()">Acceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const LOCAL_KEY = 'casagroga_compra_fallback_v1';
         const CALENDAR_SRC = 'q7hema3qhbf475ptr3a4fuq7n0@group.calendar.google.com';
         const CALENDAR_TZ = 'Europe/Madrid';
 
@@ -40,7 +1025,8 @@
             { id: 'neteja', name: 'Neteja', icon: '🧼', defaultQty: '1' }
         ];
 
-        window.shoppingItems = [];
+        window.shoppingItems = loadLocalItems();
+        window.firebaseSaveFn = null;
         let pendingItem = null;
         let currentCalendarMode = 'WEEK';
         let calendarLoadedOnce = false;
@@ -58,28 +1044,42 @@
                 }));
         }
 
+        function loadLocalItems() {
+            try {
+                const raw = localStorage.getItem(LOCAL_KEY);
+                return normalizeItems(raw ? JSON.parse(raw) : []);
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLocalItems() {
+            try {
+                localStorage.setItem(LOCAL_KEY, JSON.stringify(window.shoppingItems));
+            } catch (e) {}
+        }
+
+        window.applyRemoteItems = function(raw) {
+            window.shoppingItems = normalizeItems(raw);
+            saveLocalItems();
+            renderAllLists();
+        };
+
+        function persistItems() {
+            saveLocalItems();
+            renderAllLists();
+            if (typeof window.firebaseSaveFn === 'function') {
+                window.firebaseSaveFn(window.shoppingItems);
+            }
+        }
+
         function renderAllLists() {
             renderEverydayGrid();
             renderCartList();
             renderSupermarketList();
         }
 
-        onValue(shoppingRef, (snapshot) => {
-            window.shoppingItems = normalizeItems(snapshot.val());
-            renderAllLists();
-        }, (err) => {
-            console.error('Error llegint Firebase:', err);
-            renderAllLists();
-        });
-
-        function saveShoppingItems() {
-            renderAllLists();
-            set(shoppingRef, window.shoppingItems).catch((err) => {
-                console.error('Error guardant a Firebase:', err);
-            });
-        }
-
-        window.switchView = function(viewName) {
+        function switchView(viewName) {
             document.querySelectorAll('.view-section').forEach(sec => {
                 sec.classList.toggle('active', sec.id === `view-${viewName}`);
             });
@@ -93,11 +1093,11 @@
             if (viewName === 'supermarket') {
                 renderSupermarketList();
             }
-        };
+        }
 
-        window.triggerExitAlert = function() {
+        function triggerExitAlert() {
             alert('Avís registrat: sortida de casa.');
-        };
+        }
 
         function updateClock() {
             const now = new Date();
@@ -152,13 +1152,13 @@
             calendarLoadedOnce = true;
         }
 
-        window.reloadCalendarFrame = function() {
+        function reloadCalendarFrame() {
             loadCalendarFrame(currentCalendarMode);
-        };
+        }
 
-        window.setCalendarMode = function(mode) {
+        function setCalendarMode(mode) {
             loadCalendarFrame(mode);
-        };
+        }
 
         function renderEverydayGrid() {
             const grid = document.getElementById('everyday-grid');
@@ -244,11 +1244,8 @@
             orderedIndices.forEach(({ item, idx }) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.style.touchAction = 'manipulation';
                 btn.className = `super-item${item.done ? ' checked' : ''}`;
-                btn.addEventListener('click', () => {
-                    window.toggleDone(idx);
-                });
+                btn.onclick = () => toggleDone(idx);
                 btn.innerHTML = `
                     <div class="super-item-main">
                         <span class="super-check-box">${item.done ? '✓' : ''}</span>
@@ -263,10 +1260,10 @@
             });
         }
 
-        window.clearCheckedItems = function() {
+        function clearCheckedItems() {
             window.shoppingItems = window.shoppingItems.filter(item => !item.done);
-            saveShoppingItems();
-        };
+            persistItems();
+        }
 
         function openQuantityModal(name, icon, initialQty) {
             pendingItem = { name, icon };
@@ -281,18 +1278,18 @@
             }, 40);
         }
 
-        window.closeQuantityModal = function() {
+        function closeQuantityModal() {
             pendingItem = null;
             document.getElementById('qty-modal').classList.remove('open');
-        };
+        }
 
-        window.closeModalOnBackdrop = function(event) {
+        function closeModalOnBackdrop(event) {
             if (event.target.id === 'qty-modal') {
                 closeQuantityModal();
             }
-        };
+        }
 
-        window.stepQuantity = function(delta) {
+        function stepQuantity(delta) {
             const input = document.getElementById('modal-qty-input');
             const parsed = parseFloat(input.value.replace(',', '.'));
             if (!isNaN(parsed)) {
@@ -301,9 +1298,9 @@
             } else {
                 input.value = '1';
             }
-        };
+        }
 
-        window.acceptQuantity = function() {
+        function acceptQuantity() {
             if (!pendingItem) return;
             const rawQty = document.getElementById('modal-qty-input').value.trim();
             const quantity = rawQty || '1';
@@ -327,44 +1324,44 @@
                 });
             }
 
-            saveShoppingItems();
+            persistItems();
             closeQuantityModal();
-        };
+        }
 
-        window.handleModalKey = function(event) {
+        function handleModalKey(event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 acceptQuantity();
             } else if (event.key === 'Escape') {
                 closeQuantityModal();
             }
-        };
+        }
 
-        window.handleSporadicSubmit = function(event) {
+        function handleSporadicSubmit(event) {
             event.preventDefault();
             const input = document.getElementById('sporadic-input');
             const name = input.value.trim();
             if (!name) return;
             input.value = '';
             openQuantityModal(name, '🛍️', '1');
-        };
+        }
 
-        window.toggleDone = function(index) {
+        function toggleDone(index) {
             if (!window.shoppingItems[index]) return;
             window.shoppingItems[index].done = !window.shoppingItems[index].done;
-            saveShoppingItems();
-        };
+            persistItems();
+        }
 
-        window.editCartItem = function(index) {
+        function editCartItem(index) {
             const item = window.shoppingItems[index];
             if (!item) return;
             openQuantityModal(item.name, item.icon || '🛍️', item.quantity);
-        };
+        }
 
-        window.removeCartItem = function(index) {
+        function removeCartItem(index) {
             window.shoppingItems.splice(index, 1);
-            saveShoppingItems();
-        };
+            persistItems();
+        }
 
         function escapeHtml(text) {
             return String(text)
@@ -378,3 +1375,40 @@
         updateClock();
         setInterval(updateClock, 1000);
     </script>
+
+    <script type="module">
+        try {
+            const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+            const { getDatabase, ref, onValue, set } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js");
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyBApZq5qvq6yPy59kmD6E0h4-wuNsNQXGk",
+                authDomain: "app19-20b57.firebaseapp.com",
+                databaseURL: "https://app19-20b57-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "app19-20b57",
+                storageBucket: "app19-20b57.firebasestorage.app",
+                messagingSenderId: "517817208702",
+                appId: "1:517817208702:web:188b5e57a9b1d7a9eaad2f"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            const shoppingRef = ref(db, 'shoppingList');
+
+            window.firebaseSaveFn = function(items) {
+                set(shoppingRef, items).catch(err => console.error('Error guardant a Firebase:', err));
+            };
+
+            onValue(shoppingRef, (snapshot) => {
+                if (typeof window.applyRemoteItems === 'function') {
+                    window.applyRemoteItems(snapshot.val());
+                }
+            }, (err) => {
+                console.error('Error llegint Firebase:', err);
+            });
+        } catch (err) {
+            console.warn('Mode local actiu (Firebase no disponible):', err);
+        }
+    </script>
+</body>
+</html>
